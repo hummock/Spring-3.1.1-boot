@@ -16,8 +16,13 @@ import java.util.Set;
 @Data
 @Controller
 public class UserControllerNew {
+    private final UserService userService;
+
     @Autowired
-    private UserService userService;
+    public UserControllerNew(UserService userService) {
+
+        this.userService = userService;
+    }
 
     @GetMapping("/login")
     public String login() {
@@ -29,20 +34,20 @@ public class UserControllerNew {
         return "new_user";
     }
 
-    @PostMapping("/new_user")
-    public String createNewUser(@ModelAttribute("user") User user, @RequestParam("role") String role) {
-        user.setPasswordReal(user.getPassword());
-        Set<Role> roleSet = new HashSet<>();
-        if (role.equals("ROLE_ADMIN")){
-            roleSet.add(userService.getRoleByName("ROLE_ADMIN").get());
-            roleSet.add(userService.getRoleByName("ROLE_USER").get());
-        } else {
-            roleSet.add(userService.getRoleByName("ROLE_USER").get());
-        }
-        user.setRoles(roleSet);
-        userService.createNewUser(user);
-        return "redirect:/new_user";
-    }
+   // @PostMapping("/new_user")
+   // public String createNewUser(@ModelAttribute("user") User user, @RequestParam("role") String role) {
+   //     user.setPasswordReal(user.getPassword());
+   //     Set<Role> roleSet = new HashSet<>();
+   //     if (role.equals("ROLE_ADMIN")){
+   //         roleSet.add(userService.getRoleByName("ROLE_ADMIN").get());
+   //         roleSet.add(userService.getRoleByName("ROLE_USER").get());
+   //     } else {
+   //         roleSet.add(userService.getRoleByName("ROLE_USER").get());
+   //     }
+   //     user.setRoles(roleSet);
+   //     userService.createNewUser(user);
+   //     return "redirect:/new_user";
+   // }
 
     @GetMapping("/user")
     public ModelAndView showUser() {

@@ -10,6 +10,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestParam;
 import web.spring311v1.DAO.UserDao;
 import web.spring311v1.model.Role;
 import web.spring311v1.model.User;
@@ -20,19 +22,35 @@ import java.util.*;
 @Service
 public class UserServiceImpl implements UserService, UserDetailsService {
 
-    @Autowired
     private UserDao userDao;
-
-    @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    public void UserServiceImpl(UserDao userDao) {
+        this.userDao=userDao;
+    }
 
-    @Override
+    @Autowired
+    public void UserServiceImpl(PasswordEncoder passwordEncoder) {
+        this.passwordEncoder=passwordEncoder;
+    }
+
     @Transactional
+    @Override
     public void createNewUser(User user) {
         user.setPassword(passwordEncoder.encode(user.getPasswordReal()));
+        user.setRoles(new HashSet<>());
+
+        if (user.getRoles().equals("ROLE_ADMIN")) {
+
+            user.getRoles().add(userDao.getRoleByName("ROLE_ADMIN").get());
+            user.getRoles().add(userDao.getRoleByName("ROLE_USER").get());
+        } else {
+            user.getRoles().add( userDao.getRoleByName("ROLE_USER").get());
+        }
         userDao.createNewUser(user);
     }
+
 
     @Override
     @Transactional
@@ -78,31 +96,4 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return userDao.getUserByLogin(login).get();
     }
 
-//    @Override
-//    @Transactional(readOnly = true)
-//    public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException {
-//
-//        User user = userDao.getUserByLogin(login).get();
-//        Set<GrantedAuthority> grantedAuthorities = new HashSet<>();
-//        for (Role role : user.getRoles()) {
-//            grantedAuthorities.add(new SimpleGrantedAuthority(role.getName()));
-//        }
-//        return user;
-//    }
 
-
-//    @Override
-//    public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException {
-//        User user = userDao.getUserByLogin(login).get();
-//        if (user == null) {
-//            System.out.println("User not found!" + login);
-//            throw new UsernameNotFoundException("User" + login + " was not found in the database");
-//        }
-//
-//        Set<GrantedAuthority> grantedAuthorities = new HashSet<>();
-//        for (Role role : user.getRoles()) {
-//            grantedAuthorities.add(new SimpleGrantedAuthority(role.getName()));
-//        }
-//        return user;
-//    }
-}

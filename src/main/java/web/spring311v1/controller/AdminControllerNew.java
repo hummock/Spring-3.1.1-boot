@@ -2,6 +2,7 @@ package web.spring311v1.controller;
 
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -18,8 +19,14 @@ import java.util.Set;
 @RequestMapping("/admin")
 public class AdminControllerNew {
 
+    private final UserService userService;
+
     @Autowired
-    private UserService userService;
+    public AdminControllerNew(UserService userService) {
+
+        this.userService = userService;
+    }
+
 
     @GetMapping("/all_users")
     public ModelAndView getAllUsers() {
@@ -49,7 +56,8 @@ public class AdminControllerNew {
         return "edit_page";
     }
 
-    @GetMapping("/all_users/remove_user/{id}")
+    @DeleteMapping ("/all_users/remove_user/{id}")
+
     public String deleteUser(@PathVariable("id") Long id) {
         userService.deleteUserById(id);
         return "redirect:/admin/all_users";
