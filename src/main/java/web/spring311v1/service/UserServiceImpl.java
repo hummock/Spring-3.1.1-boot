@@ -2,16 +2,15 @@ package web.spring311v1.service;
 
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
+
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestParam;
+
+import web.spring311v1.DAO.RoleDao;
 import web.spring311v1.DAO.UserDao;
 import web.spring311v1.model.Role;
 import web.spring311v1.model.User;
@@ -23,34 +22,31 @@ import java.util.*;
 public class UserServiceImpl implements UserService, UserDetailsService {
 
     private UserDao userDao;
+    private RoleDao roleDao;
+
     private PasswordEncoder passwordEncoder;
 
     @Autowired
     public void UserServiceImpl(UserDao userDao) {
-        this.userDao=userDao;
+        this.userDao = userDao;
+    }
+
+    @Autowired
+    public void UserServiceImpl(RoleDao roleDao) {
+        this.roleDao = roleDao;
     }
 
     @Autowired
     public void UserServiceImpl(PasswordEncoder passwordEncoder) {
-        this.passwordEncoder=passwordEncoder;
+        this.passwordEncoder = passwordEncoder;
     }
 
-    @Transactional
     @Override
+    @Transactional
     public void createNewUser(User user) {
         user.setPassword(passwordEncoder.encode(user.getPasswordReal()));
-        user.setRoles(new HashSet<>());
-
-        if (user.getRoles().equals("ROLE_ADMIN")) {
-
-            user.getRoles().add(userDao.getRoleByName("ROLE_ADMIN").get());
-            user.getRoles().add(userDao.getRoleByName("ROLE_USER").get());
-        } else {
-            user.getRoles().add( userDao.getRoleByName("ROLE_USER").get());
-        }
         userDao.createNewUser(user);
     }
-
 
     @Override
     @Transactional
@@ -95,5 +91,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
         return userDao.getUserByLogin(login).get();
     }
+}
 
 

@@ -9,7 +9,7 @@ import javax.persistence.*;
 import java.util.Collection;
 import java.util.Set;
 
-@NoArgsConstructor
+
 @Getter
 @Setter
 
@@ -39,10 +39,15 @@ public class User implements UserDetails {
     @Column(name = "password_real")
     private String passwordReal;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "USER_ID"),
+    @ManyToMany(fetch = FetchType.EAGER,
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(name = "user_role",
+            joinColumns = @JoinColumn(name = "USER_ID"),
             inverseJoinColumns = @JoinColumn(name = "ROLE_ID"))
     private Set<Role> roles;
+
+    public User() {
+    }
 
     public User(String name, String lastname, int age, String login, String password) {
         this.name = name;

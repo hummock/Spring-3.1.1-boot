@@ -6,12 +6,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
-import web.spring311v1.model.Role;
+
 import web.spring311v1.model.User;
 import web.spring311v1.service.UserService;
 
-import java.util.HashSet;
-import java.util.Set;
+
 
 @Data
 @Controller
@@ -34,20 +33,13 @@ public class UserControllerNew {
         return "new_user";
     }
 
-   // @PostMapping("/new_user")
-   // public String createNewUser(@ModelAttribute("user") User user, @RequestParam("role") String role) {
-   //     user.setPasswordReal(user.getPassword());
-   //     Set<Role> roleSet = new HashSet<>();
-   //     if (role.equals("ROLE_ADMIN")){
-   //         roleSet.add(userService.getRoleByName("ROLE_ADMIN").get());
-   //         roleSet.add(userService.getRoleByName("ROLE_USER").get());
-   //     } else {
-   //         roleSet.add(userService.getRoleByName("ROLE_USER").get());
-   //     }
-   //     user.setRoles(roleSet);
-   //     userService.createNewUser(user);
-   //     return "redirect:/new_user";
-   // }
+    @PostMapping("/new_user")
+    public String createNewUser(@ModelAttribute("user") User user, @RequestParam("role") String role) {
+        user.setPasswordReal(user.getPassword());
+
+        userService.createNewUser(user);
+        return "redirect:/new_user";
+    }
 
     @GetMapping("/user")
     public ModelAndView showUser() {
