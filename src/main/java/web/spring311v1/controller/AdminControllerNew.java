@@ -7,13 +7,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
-import web.spring311v1.model.Role;
 import web.spring311v1.model.User;
-import web.spring311v1.service.RoleService;
 import web.spring311v1.service.UserService;
-
-import java.util.HashSet;
-import java.util.Set;
 
 @Data
 @Controller
@@ -21,15 +16,13 @@ import java.util.Set;
 public class AdminControllerNew {
 
     private final UserService userService;
-    private final RoleService roleService;
 
     @Autowired
-    public AdminControllerNew(UserService userService, RoleService roleService) {
+    public AdminControllerNew(UserService userService) {
 
         this.userService = userService;
-        this.roleService = roleService;
-    }
 
+    }
 
     @GetMapping("/all_users")
     public ModelAndView getAllUsers() {
@@ -46,35 +39,19 @@ public class AdminControllerNew {
     }
 
     @PostMapping("/{id}")
-    public String editUser(@ModelAttribute("user") User user, @RequestParam("role") String role) {
-        Set<Role> roleSet = new HashSet<>();
-        if (role.equals("ROLE_ADMIN")){
-            roleSet.add(userService.getRoleByName("ROLE_ADMIN").get());
-            roleSet.add(userService.getRoleByName("ROLE_USER").get());
-        } else {
-            roleSet.add(userService.getRoleByName("ROLE_USER").get());
-        }
-        user.setRoles(roleSet);
-
-        // Set<Role> roleSet = new HashSet<>();
-        // if (role.equals("ROLE_ADMIN")){
-        //     roleSet.add(userService.getRoleByName("ROLE_ADMIN").get());
-        //    roleSet.add(userService.getRoleByName("ROLE_USER").get());
-        // } else {
-        //     roleSet.add(userService.getRoleByName("ROLE_USER").get());
-        // }
-        // user.setRoles(roleSet);
-        // Set<Role> rolesSet = new HashSet<>();
-        // for (String roleName : role) {
-         //   rolesSet.add(roleService.getByName(roleName));
-        // }
-        // user.setRoles(rolesSet);
+    public String updateUser(@ModelAttribute("user") User user) {
         userService.editUser(user);
         return "edit_page";
     }
 
-    @DeleteMapping ("/all_users/remove_user/{id}")
+    @PostMapping("/new_user")
+    public String createNewUser(@ModelAttribute("user") User user, @RequestParam("role") String role) {
+        user.setPasswordReal(user.getPassword());
+        userService.createNewUser(user);
+        return "redirect:/new_user";
+    }
 
+    @DeleteMapping ("/all_users/remove_user/{id}")
     public String deleteUser(@PathVariable("id") Long id) {
         userService.deleteUserById(id);
         return "redirect:/admin/all_users";
