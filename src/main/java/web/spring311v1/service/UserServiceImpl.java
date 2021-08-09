@@ -8,6 +8,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import web.spring311v1.DAO.UserDao;
 import web.spring311v1.model.Role;
 import web.spring311v1.model.User;
@@ -73,6 +75,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
+    @Transactional
     public Optional<Role> getRoleByName(String name) {
         return userDao.getRoleByName(name);
     }
